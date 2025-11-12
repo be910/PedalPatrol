@@ -1,0 +1,43 @@
+body {
+  font: 100%/1.5 system-ui, sans-serif;
+  display: flex;
+  flex-flow: column;
+  max-width: 80em;
+  min-height: 100vh;
+  box-sizing: border-box;
+  margin: auto;
+  padding: 1em;
+}
+
+header {
+    display: flex;
+    gap: 1em;
+    align-items: baseline;
+    padding: 1em;
+}
+
+header h1 {
+    margin: 0;
+}
+
+label {
+    margin-left: auto;
+    display: flex;
+    align-items: baseline;
+    gap: 0.5em;
+}
+
+#time-slider {
+    width: 300px;
+    margin: 0 0.5em;
+}
+
+#any-time-label {
+    color: #999;
+    font-style: italic;
+    display: block;
+}
+
+#time-display {
+    display: block;
+}

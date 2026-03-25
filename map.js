@@ -127,11 +127,15 @@ map.on('load', async () => {
   let stationFlow = d3.scaleQuantize().domain([0, 1]).range([0, 0.5, 1]);
 
   try {
-    const jsonurl = 'https://dsc106.com/labs/lab07/data/bluebikes-stations.json';
-    const jsonData = await d3.json(jsonurl);
+    const stationsData = await d3.csv('/assets/bluebikes-stations.csv', station => ({
+      short_name: station['Number'],
+      name: station['NAME'],
+      lat: +station['Lat'],
+      lon: +station['Long'],
+    }));
 
     trips = await d3.csv(
-      'https://dsc106.com/labs/lab07/data/bluebikes-traffic-2024-03.csv',
+      '/assets/bluebikes-traffic-2024-03.csv',
       trip => {
         trip.started_at = new Date(trip.started_at);
         trip.ended_at = new Date(trip.ended_at);
@@ -149,7 +153,7 @@ map.on('load', async () => {
     });
 
     // THEN compute station traffic
-    stations = computeStationTraffic(jsonData.data.stations);
+    stations = computeStationTraffic(stationsData);
 
   } catch (error) {
     console.error('Error loading JSON or CSV:', error);
@@ -184,8 +188,8 @@ map.on('load', async () => {
     .enter()
     .append('circle')
     .attr('r', d => radiusScale(d.totalTraffic))
-    .style('--departure-ratio', d => 
-      stationFlow(d.departures / d.totalTraffic)
+    .style('--departure-ratio', d =>
+      stationFlow(d.totalTraffic === 0 ? 0.5 : d.departures / d.totalTraffic)
     );
 
   circles.append('title')
@@ -201,7 +205,7 @@ map.on('load', async () => {
     const filteredStations = computeStationTraffic(stations, timeFilter);
 
     // Update the domain based on filtered data's max traffic
-    const maxTraffic = d3.max(filteredStations, d => d.totalTraffic);
+    const maxTraffic = d3.max(filteredStations, d => d.totalTraffic) || 1;
     radiusScale
       .domain([0, maxTraffic])
       .range(timeFilter === -1 ? [0, 15] : [3, 25]);
@@ -209,10 +213,10 @@ map.on('load', async () => {
     // Update circle attributes
     circles
       .attr('r', d => radiusScale(d.totalTraffic))
-      .style('--departure-ratio', d => 
-        stationFlow(d.departures / d.totalTraffic)
+      .style('--departure-ratio', d =>
+        stationFlow(d.totalTraffic === 0 ? 0.5 : d.departures / d.totalTraffic)
       );
-    
+
     // Update tooltips
     circles.select('title')
       .text(d => `${d.totalTraffic} trips (${d.departures} departures, ${d.arrivals} arrivals)`);

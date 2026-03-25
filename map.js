@@ -126,7 +126,7 @@ map.on('load', async () => {
   let stationFlow = d3.scaleQuantize().domain([0, 1]).range([0, 0.5, 1]);
 
   try {
-    const stationsData = await d3.csv('/assets/bluebikes-stations.csv', station => ({
+    const stationsData = await d3.csv('./assets/bluebikes-stations.csv', station => ({
       short_name: station['Number'],
       name: station['NAME'],
       lat: +station['Lat'],
@@ -134,7 +134,7 @@ map.on('load', async () => {
     }));
 
     trips = await d3.csv(
-      '/assets/bluebikes-traffic-2024-03.csv',
+      './assets/bluebikes-traffic-2024-03.csv',
       trip => {
         trip.started_at = new Date(trip.started_at);
         trip.ended_at = new Date(trip.ended_at);
